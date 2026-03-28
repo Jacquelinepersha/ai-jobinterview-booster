@@ -16,12 +16,24 @@ def _get_provider():
         return "anthropic"
     if os.getenv("OPENAI_API_KEY"):
         return "openai"
-    return "ollama"
+    # Only try Ollama if running locally (not on Streamlit Cloud)
+    if os.getenv("OLLAMA_URL"):
+        return "ollama"
+    return None
 
 
 def generate(prompt: str, system: str = "", temperature: float = 0.7, max_tokens: int = 2500) -> str:
     """Generate text using whichever AI provider is configured."""
     provider = _get_provider()
+
+    if provider is None:
+        raise ConnectionError(
+            "No API key found. Please enter your OpenAI or Anthropic API key "
+            "in the sidebar on the left. You can get a key at:\n\n"
+            "• OpenAI: https://platform.openai.com/api-keys\n"
+            "• Anthropic: https://console.anthropic.com\n\n"
+            "Keys are NOT stored — they stay in your browser session only."
+        )
 
     if provider == "anthropic":
         return _call_anthropic(prompt, system, temperature, max_tokens)
@@ -73,13 +85,22 @@ def _call_ollama(prompt, system, temperature, max_tokens):
     }
     if system:
         payload["system"] = system
-    resp = requests.post(f"{base}/api/generate", json=payload, timeout=120)
-    resp.raise_for_status()
-    return resp.json()["response"]
+    try:
+        resp = requests.post(f"{base}/api/generate", json=payload, timeout=120)
+        resp.raise_for_status()
+        return resp.json()["response"]
+    except requests.exceptions.ConnectionError:
+        raise ConnectionError(
+            "Could not connect to Ollama. If you're using Streamlit Cloud, "
+            "Ollama won't work — please enter an OpenAI or Anthropic API key "
+            "in the sidebar instead."
+        )
 
 
 def get_provider_name() -> str:
     """Return friendly name of active provider."""
     p = _get_provider()
+    if p is None:
+        return "No provider configured"
     names = {"anthropic": "Claude (Anthropic)", "openai": "GPT-4o (OpenAI)", "ollama": "Local AI (Ollama)"}
     return names.get(p, p)
