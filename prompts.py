@@ -1,13 +1,26 @@
 """
 Prompts — the real magic. These are heavily optimized for structured, useful output.
+Supports English and Spanish (easily extensible to more languages).
 """
 
-SYSTEM = """You are an elite career coach who has helped 10,000+ professionals land jobs at top companies.
+SYSTEM_EN = """You are an elite career coach who has helped 10,000+ professionals land jobs at top companies.
 You give specific, actionable advice — not generic fluff.
 You understand ATS systems, recruiter psychology, and what actually gets interviews."""
 
+SYSTEM_ES = """Eres un coach de carrera de élite que ha ayudado a más de 10,000 profesionales a conseguir trabajo en las mejores empresas.
+Das consejos específicos y accionables — nada genérico.
+Entiendes los sistemas ATS, la psicología de los reclutadores y lo que realmente consigue entrevistas."""
 
-def job_match_prompt(resume: str, job: str) -> str:
+def get_system(lang="English"):
+    return SYSTEM_ES if lang == "Español" else SYSTEM_EN
+
+def _lang_instruction(lang):
+    if lang == "Español":
+        return "\n\nIMPORTANT: Respond ENTIRELY in Spanish (Español). All headers, analysis, and recommendations must be in Spanish."
+    return ""
+
+
+def job_match_prompt(resume: str, job: str, lang: str = "English") -> str:
     return f"""Analyze how well this candidate matches this job. Be brutally honest.
 
 ## JOB DESCRIPTION:
@@ -37,10 +50,10 @@ Respond in this EXACT format (use the headers exactly as shown):
 ### SALARY ESTIMATE: [estimated range based on role + location + level]
 
 ### BOTTOM LINE:
-[2-3 sentences: should they apply? what should they emphasize? what to study/learn quickly?]"""
+[2-3 sentences: should they apply? what should they emphasize? what to study/learn quickly?]{_lang_instruction(lang)}"""
 
 
-def resume_optimizer_prompt(resume: str, job: str) -> str:
+def resume_optimizer_prompt(resume: str, job: str, lang: str = "English") -> str:
     return f"""Rewrite this resume to be perfectly targeted for this specific job.
 
 ## JOB DESCRIPTION:
@@ -73,10 +86,10 @@ Respond in this EXACT format:
 ### WHAT CHANGED AND WHY:
 - [change 1 — why this helps]
 - [change 2 — why this helps]
-- [change 3 — why this helps]"""
+- [change 3 — why this helps]{_lang_instruction(lang)}"""
 
 
-def cover_letter_prompt(resume: str, job: str, company: str = "") -> str:
+def cover_letter_prompt(resume: str, job: str, company: str = "", lang: str = "English") -> str:
     return f"""Write a cover letter that will make a hiring manager stop scrolling and read the whole thing.
 
 ## JOB:
@@ -98,10 +111,10 @@ Rules:
 8. NEVER use "I believe I would be a great fit"
 9. NEVER use "I am writing to express my interest in"
 
-Respond with ONLY the cover letter. No labels, no "Dear Hiring Manager" unless it fits naturally. Start with the hook."""
+Respond with ONLY the cover letter. No labels, no "Dear Hiring Manager" unless it fits naturally. Start with the hook.{_lang_instruction(lang)}"""
 
 
-def interview_prep_prompt(resume: str, job: str) -> str:
+def interview_prep_prompt(resume: str, job: str, lang: str = "English") -> str:
     return f"""Generate interview preparation for this specific role.
 
 ## JOB:
@@ -135,10 +148,10 @@ Respond in this format:
 ### AREAS TO STUDY BEFORE THE INTERVIEW:
 - [topic 1 — why it matters for this role]
 - [topic 2]
-- [topic 3]"""
+- [topic 3]{_lang_instruction(lang)}"""
 
 
-def linkedin_optimizer_prompt(resume: str, job: str) -> str:
+def linkedin_optimizer_prompt(resume: str, job: str, lang: str = "English") -> str:
     return f"""Optimize this person's LinkedIn headline and summary to attract recruiters for this type of role.
 
 ## TARGET ROLE:
@@ -163,4 +176,4 @@ Respond in this format:
 5. [skill]
 
 ### PROFILE KEYWORDS TO ADD:
-[comma-separated list of terms recruiters use to find candidates like this]"""
+[comma-separated list of terms recruiters use to find candidates like this]{_lang_instruction(lang)}"""
