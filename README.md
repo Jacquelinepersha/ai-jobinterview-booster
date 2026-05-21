@@ -218,12 +218,14 @@ If this tool helped your job search, give it a ⭐! It helps others find it.
 
 ## License
 
-MIT — free to use, modify, and distribute. See [LICENSE](LICENSE) for details.
+MIT — free to use, modify, and distribute.
 
 ---
 
+Built by [Jacquie Persha](https://x.com/jacquiepersha) · Co-founder of [NextGenIQ.io](https://nextgeniq.io), the AI visibility platform for B2B brands.
+
 <p align="center">
-  <strong>Built with ❤️ to make job searching less painful</strong>
+  <strong>Built with ❤️ to make content creation 10x faster</strong>
   <br />
-  <sub>If this helped you land an interview, I'd love to hear about it!</sub>
+  <sub>Record once, repurpose everywhere.</sub>
 </p>
